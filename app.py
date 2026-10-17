@@ -588,8 +588,4 @@ st.markdown(
 '''
 req = "streamlit\nnumpy\npandas\nsympy\n"
 
-base = Path("/mnt/data")
-base.mkdir(parents=True, exist_ok=True)
-(base / "app.py").write_text(app_code, encoding="utf-8")
-(base / "requirements.txt").write_text(req, encoding="utf-8")
-print("Berhasil membuat app.py dan requirements.txt")
+
