@@ -282,6 +282,156 @@ def rref_with_steps(A: np.ndarray, tol: float = 1e-10):
 
 
 # =========================================================
+# MODUL PEMBELAJARAN
+# =========================================================
+LESSONS = {
+    "Penjumlahan": {
+        "title": "Penjumlahan Matriks",
+        "goal": "Menjumlahkan elemen yang posisinya sama pada dua matriks.",
+        "idea": "Ukuran A dan B harus sama. Elemen baris ke-i kolom ke-j dijumlahkan dengan elemen pada posisi yang sama.",
+        "formula": r"C=A+B,\quad c_{ij}=a_{ij}+b_{ij}",
+        "example": "Jika A[1,1] = 2 dan B[1,1] = 5, maka C[1,1] = 2 + 5 = 7.",
+        "check": "Pastikan jumlah baris dan kolom kedua matriks sama."
+    },
+    "Pengurangan": {
+        "title": "Pengurangan Matriks",
+        "goal": "Mengurangkan elemen B dari elemen A pada posisi yang sama.",
+        "idea": "Ukuran A dan B harus sama. Urutan penting: A − B tidak selalu sama dengan B − A.",
+        "formula": r"C=A-B,\quad c_{ij}=a_{ij}-b_{ij}",
+        "example": "Jika A[1,1] = 8 dan B[1,1] = 3, maka C[1,1] = 8 − 3 = 5.",
+        "check": "Jangan menukar urutan pengurangan."
+    },
+    "Perkalian": {
+        "title": "Perkalian Matriks",
+        "goal": "Mengalikan baris matriks A dengan kolom matriks B.",
+        "idea": "Jumlah kolom A harus sama dengan jumlah baris B. Untuk satu elemen hasil, kalikan pasangan angka lalu jumlahkan hasil perkaliannya.",
+        "formula": r"c_{ij}=\sum_{k=1}^{n}a_{ik}b_{kj}",
+        "example": "Baris [2, 3] dikali kolom [4, 5] menghasilkan (2 × 4) + (3 × 5) = 23.",
+        "check": "Ukuran hasil adalah (baris A) × (kolom B)."
+    },
+    "Transpose": {
+        "title": "Transpose Matriks",
+        "goal": "Mengubah setiap baris menjadi kolom.",
+        "idea": "Elemen pada posisi baris i dan kolom j berpindah ke baris j dan kolom i.",
+        "formula": r"(A^T)_{ij}=A_{ji}",
+        "example": "Jika A = [[1, 2], [3, 4]], maka Aᵀ = [[1, 3], [2, 4]].",
+        "check": "Jika A berukuran m × n, maka Aᵀ berukuran n × m."
+    },
+    "Determinan": {
+        "title": "Determinan Matriks",
+        "goal": "Menghitung satu nilai skalar dari matriks persegi.",
+        "idea": "Determinan hanya didefinisikan untuk matriks persegi. Untuk 2 × 2, kalikan diagonal utama lalu kurangi dengan perkalian diagonal lainnya.",
+        "formula": r"A=\begin{bmatrix}a&b\c&d\end{bmatrix},\quad \det(A)=ad-bc",
+        "example": "Untuk [[2, 3], [1, 4]], det(A) = (2 × 4) − (3 × 1) = 5.",
+        "check": "Jika determinan nol, matriks tidak memiliki invers."
+    },
+    "Invers (Matriks Identitas)": {
+        "title": "Invers dengan Matriks Identitas",
+        "goal": "Mencari matriks A⁻¹ yang jika dikalikan dengan A menghasilkan matriks identitas.",
+        "idea": "Gabungkan A dan I menjadi [A | I]. Gunakan operasi baris elementer sampai bagian kiri menjadi I; bagian kanan akan menjadi A⁻¹.",
+        "formula": r"[A\mid I]\longrightarrow[I\mid A^{-1}],\quad AA^{-1}=I",
+        "example": "Matriks identitas 2 × 2 adalah [[1, 0], [0, 1]]. Elemen diagonalnya 1, elemen lainnya 0.",
+        "check": "A harus persegi dan determinannya tidak boleh nol."
+    },
+    "Rank": {
+        "title": "Rank Matriks",
+        "goal": "Menentukan jumlah pivot atau baris tak nol pada bentuk eselon baris.",
+        "idea": "Sederhanakan matriks dengan operasi baris elementer. Jumlah pivot pada bentuk eselon adalah rank matriks.",
+        "formula": r"\operatorname{rank}(A)=\text{jumlah pivot}",
+        "example": "Jika setelah eliminasi terdapat dua baris tak nol dan satu baris nol, rank matriks adalah 2.",
+        "check": "Rank tidak mungkin melebihi jumlah baris atau kolom."
+    },
+    "Trace": {
+        "title": "Trace Matriks",
+        "goal": "Menjumlahkan elemen pada diagonal utama matriks persegi.",
+        "idea": "Ambil elemen dari kiri atas ke kanan bawah, lalu jumlahkan.",
+        "formula": r"\operatorname{tr}(A)=a_{11}+a_{22}+\cdots+a_{nn}",
+        "example": "Untuk [[2, 9], [4, 3]], trace = 2 + 3 = 5.",
+        "check": "Trace hanya dihitung untuk matriks persegi."
+    },
+    "SPL - Gauss-Jordan": {
+        "title": "SPL dengan Gauss–Jordan",
+        "goal": "Mencari nilai variabel dengan mengubah matriks augmented menjadi bentuk eselon baris tereduksi.",
+        "idea": "Bentuk [A | B]. Gunakan pertukaran baris, perkalian baris dengan bilangan bukan nol, atau penjumlahan kelipatan baris untuk membentuk pivot 1 dan nol di atas/bawah pivot.",
+        "formula": r"[A\mid B]\longrightarrow[I\mid x]",
+        "example": "Dari x + y = 3 dan x − y = 1, jumlahkan kedua persamaan sehingga 2x = 4, jadi x = 2; kemudian y = 1.",
+        "check": "Substitusikan nilai variabel ke persamaan awal untuk memeriksa hasil."
+    },
+    "Doolittle Factorization": {
+        "title": "Faktorisasi Doolittle",
+        "goal": "Memecah matriks A menjadi perkalian matriks segitiga bawah L dan segitiga atas U.",
+        "idea": "Pada Doolittle, diagonal utama L bernilai 1. Elemen U dihitung terlebih dahulu, lalu elemen di bawah diagonal L dihitung menggunakan pivot U.",
+        "formula": r"A=LU,\quad l_{ii}=1",
+        "example": "Untuk matriks 2 × 2, bentuk L = [[1, 0], [l₂₁, 1]] dan U = [[u₁₁, u₁₂], [0, u₂₂]].",
+        "check": "Metode pada aplikasi ini tidak melakukan pivoting; pivot nol dapat membuat proses gagal."
+    },
+    "Crout Factorization": {
+        "title": "Faktorisasi Crout",
+        "goal": "Memecah A menjadi L dan U seperti Doolittle, tetapi aturan diagonalnya berbeda.",
+        "idea": "Pada Crout, diagonal utama U bernilai 1. Elemen L dihitung terlebih dahulu, lalu elemen U di sebelah kanan diagonal.",
+        "formula": r"A=LU,\quad u_{ii}=1",
+        "example": "Untuk matriks 2 × 2, bentuk L = [[l₁₁, 0], [l₂₁, l₂₂]] dan U = [[1, u₁₂], [0, 1]].",
+        "check": "Matriks harus persegi dan pivot L tidak boleh nol."
+    },
+    "Cholesky Factorization": {
+        "title": "Faktorisasi Cholesky",
+        "goal": "Memecah matriks A menjadi L dikali transpose L.",
+        "idea": "Cholesky hanya dapat digunakan pada matriks persegi yang simetris dan definit positif. Elemen diagonal L dihitung menggunakan akar kuadrat.",
+        "formula": r"A=LL^T,\quad l_{ii}=\sqrt{a_{ii}-\sum_{k=1}^{i-1}l_{ik}^2}",
+        "example": "Matriks simetris berarti A = Aᵀ, misalnya [[4, 2], [2, 3]].",
+        "check": "Jika matriks tidak simetris atau bukan definit positif, Cholesky real tidak dapat dilanjutkan."
+    },
+}
+
+
+def show_lesson(operation: str):
+    lesson = LESSONS.get(operation)
+    if not lesson:
+        return
+    st.markdown("## 📘 Belajar sebelum menghitung")
+    st.markdown(f"### {lesson['title']}")
+    st.markdown(f"**Tujuan:** {lesson['goal']}")
+    st.info(lesson["idea"])
+    st.markdown("**Rumus utama**")
+    st.latex(lesson["formula"])
+    with st.expander("Lihat contoh sederhana dan tips", expanded=True):
+        st.write("**Contoh:** " + lesson["example"])
+        st.write("**Yang perlu diingat:** " + lesson["check"])
+
+
+def show_practice(operation: str):
+    """Small retrieval-practice questions; reveal feedback only after submission."""
+    questions = {
+        "Penjumlahan": ("Jika A[1,1] = 4 dan B[1,1] = 6, berapa C[1,1] untuk C = A + B?", ["2", "10", "24"], "10", "Penjumlahan menjumlahkan elemen pada posisi yang sama: 4 + 6 = 10."),
+        "Pengurangan": ("Jika A[1,1] = 9 dan B[1,1] = 2, berapa (A − B)[1,1]?", ["7", "11", "18"], "7", "Kurangi elemen B dari elemen A: 9 − 2 = 7."),
+        "Perkalian": ("Baris [2, 3] dikali kolom [4, 5] menghasilkan berapa?", ["23", "26", "19"], "23", "Kalikan lalu jumlahkan: (2 × 4) + (3 × 5) = 8 + 15 = 23."),
+        "Transpose": ("Pada transpose, baris matriks akan menjadi apa?", ["Baris tetap baris", "Kolom", "Diagonal"], "Kolom", "Transpose menukar posisi baris dan kolom."),
+        "Determinan": ("Determinan [[2, 3], [1, 4]] adalah ...", ["5", "11", "8"], "5", "det(A) = ad − bc = (2 × 4) − (3 × 1) = 5."),
+        "Invers (Matriks Identitas)": ("Jika determinan matriks persegi sama dengan nol, apakah matriks memiliki invers?", ["Ya", "Tidak", "Selalu"], "Tidak", "Determinan nol berarti matriks singular dan tidak memiliki invers."),
+        "Rank": ("Rank dapat ditentukan dari jumlah ... pada bentuk eselon baris.", ["Pivot", "Kolom kosong", "Angka negatif"], "Pivot", "Rank sama dengan jumlah pivot atau baris tak nol pada bentuk eselon."),
+        "Trace": ("Trace matriks persegi adalah jumlah elemen pada ...", ["Diagonal utama", "Baris pertama", "Kolom terakhir"], "Diagonal utama", "Trace menjumlahkan elemen diagonal utama dari kiri atas ke kanan bawah."),
+        "SPL - Gauss-Jordan": ("Operasi baris mana yang diperbolehkan dalam Gauss–Jordan?", ["Menukar dua baris", "Mengubah hanya satu angka tanpa aturan", "Menghapus persamaan"], "Menukar dua baris", "Pertukaran baris adalah salah satu operasi baris elementer yang sah."),
+        "Doolittle Factorization": ("Pada metode Doolittle, elemen diagonal utama matriks L adalah ...", ["Selalu 1", "Selalu 0", "Selalu −1"], "Selalu 1", "Doolittle menetapkan diagonal utama L bernilai 1."),
+        "Crout Factorization": ("Pada metode Crout, elemen diagonal utama matriks U adalah ...", ["Selalu 1", "Selalu 0", "Selalu sama dengan diagonal A"], "Selalu 1", "Crout menetapkan diagonal utama U bernilai 1."),
+        "Cholesky Factorization": ("Salah satu syarat Cholesky adalah matriks harus ...", ["Simetris dan definit positif", "Selalu berordo 2 × 3", "Memiliki semua elemen nol"], "Simetris dan definit positif", "Cholesky real membutuhkan matriks persegi simetris dan definit positif."),
+    }
+    q = questions.get(operation)
+    if not q:
+        return
+    question, options, correct, explanation = q
+    st.markdown("## 🧠 Latihan mandiri")
+    st.write(question)
+    choice = st.radio("Pilih jawaban:", options, key=f"quiz_{operation}", index=None)
+    if st.button("Periksa jawaban", key=f"check_{operation}"):
+        if choice is None:
+            st.warning("Pilih salah satu jawaban terlebih dahulu.")
+        elif choice == correct:
+            st.success("Benar! " + explanation)
+        else:
+            st.error("Belum tepat. Coba pikirkan kembali, lalu baca petunjuk berikut.")
+            st.info(explanation)
+
+# =========================================================
 # HEADER
 # =========================================================
 st.markdown(
@@ -299,7 +449,8 @@ st.markdown(
 # SIDEBAR
 # =========================================================
 st.sidebar.markdown("## ⚙️ Pengaturan")
-st.sidebar.caption("Pilih operasi dan ukuran matriks.")
+st.sidebar.caption("Pilih cara belajar dan operasi matriks.")
+mode = st.sidebar.radio("Mode aplikasi", ["Mode Belajar", "Mode Kalkulator", "Mode Latihan"], index=0)
 operation = st.sidebar.selectbox(
     "Pilih operasi",
     [
@@ -343,6 +494,20 @@ st.sidebar.markdown("---")
 st.sidebar.caption("Mendukung ukuran hingga 100 × 100. Untuk matriks besar, tampilan langkah dibatasi agar aplikasi tetap responsif.")
 
 # =========================================================
+# AREA BELAJAR / LATIHAN
+# =========================================================
+if mode == "Mode Belajar":
+    show_lesson(operation)
+elif mode == "Mode Latihan":
+    st.markdown("## 🎯 Uji pemahamanmu")
+    st.caption("Jawab pertanyaan singkat sebelum memakai kalkulator. Penjelasan akan muncul setelah kamu memeriksa jawaban.")
+    show_practice(operation)
+    st.markdown("---")
+    st.markdown("### Sekarang coba dengan matriksmu sendiri")
+else:
+    st.caption("Mode Kalkulator aktif: masukkan matriks dan hitung. Aktifkan 'Tampilkan langkah perhitungan' untuk melihat prosesnya.")
+
+# =========================================================
 # INPUT MATRIX
 # =========================================================
 col_a, col_b = st.columns(2 if need_b else 1, gap="large")
@@ -384,7 +549,7 @@ else:
     df_b = None
 
 st.markdown("")
-run = st.button("▶  Hitung Matriks", type="primary", use_container_width=True)
+run = st.button("▶  Hitung dan Pelajari Langkahnya", type="primary", use_container_width=True)
 
 if run:
     try:
@@ -392,7 +557,8 @@ if run:
         B = read_editor(df_b, "Matriks B") if df_b is not None else None
 
         st.markdown("---")
-        st.header("Hasil Perhitungan")
+        st.header("Hasil dan Pembahasan")
+        st.caption("Baca rumus dan uraian langkahnya untuk memahami bagaimana hasil diperoleh, bukan hanya menyalin angka akhir.")
 
         if operation == "Penjumlahan":
             if A.shape != B.shape:
